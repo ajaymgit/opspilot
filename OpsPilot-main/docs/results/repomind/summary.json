@@ -1,0 +1,30 @@
+{
+  "n_modules": 80,
+  "n_copybooks": 12,
+  "n_scenarios": 200,
+  "n_nontrivial_scenarios": 166,
+  "avg_truly_impacted_per_scenario": 11.615,
+  "no_propagation": {
+    "avg_precision": 0.17,
+    "avg_recall": 0.17,
+    "avg_f1": 0.17,
+    "avg_n_flagged": 0.0,
+    "avg_recall_nontrivial_only": 0.0
+  },
+  "verify_everything": {
+    "avg_precision": 0.1452,
+    "avg_recall": 1.0,
+    "avg_f1": 0.2193,
+    "avg_n_flagged": 80.0,
+    "avg_precision_nontrivial_only": 0.1749
+  },
+  "repo_mind": {
+    "avg_precision": 0.3719,
+    "avg_recall": 1.0,
+    "avg_f1": 0.4834,
+    "avg_n_flagged": 26.31,
+    "avg_precision_nontrivial_only": 0.4481,
+    "avg_recall_nontrivial_only": 1.0
+  },
+  "repo_mind_scope_reduction_vs_verify_everything_pct": 67.11
+}

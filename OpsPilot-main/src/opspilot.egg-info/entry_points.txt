@@ -1,0 +1,2 @@
+[console_scripts]
+opspilot = opspilot.cli:main

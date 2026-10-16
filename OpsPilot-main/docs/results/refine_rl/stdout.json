@@ -1,0 +1,185 @@
+{
+  "n_train": 1500,
+  "n_holdout": 600,
+  "predictor_trained": true,
+  "fixed_low_budget": 4,
+  "fixed_high_budget": 12,
+  "fixed_low": {
+    "n_modules": 600,
+    "n_convergeable": 578,
+    "n_unconvergeable": 22,
+    "total_iterations_consumed": 2346,
+    "avg_iterations_per_module": 3.91,
+    "convergence_rate": 0.2647,
+    "premature_escalation_rate": 0.7353,
+    "avg_iterations_on_unconvergeable_modules": 4.0
+  },
+  "fixed_high": {
+    "n_modules": 600,
+    "n_convergeable": 578,
+    "n_unconvergeable": 22,
+    "total_iterations_consumed": 3917,
+    "avg_iterations_per_module": 6.528,
+    "convergence_rate": 0.9689,
+    "premature_escalation_rate": 0.0311,
+    "avg_iterations_on_unconvergeable_modules": 12.0
+  },
+  "refine_rl": {
+    "n_modules": 600,
+    "n_convergeable": 578,
+    "n_unconvergeable": 22,
+    "total_iterations_consumed": 3787,
+    "avg_iterations_per_module": 6.312,
+    "convergence_rate": 0.8806,
+    "premature_escalation_rate": 0.1194,
+    "avg_iterations_on_unconvergeable_modules": 8.364
+  },
+  "iteration_savings_vs_fixed_high_pct": 3.32,
+  "convergence_rate_gap_vs_fixed_high_pct": 8.83
+}
+{
+  "fixed_budget_frontier": [
+    {
+      "n_modules": 600,
+      "n_convergeable": 578,
+      "n_unconvergeable": 22,
+      "total_iterations_consumed": 1793,
+      "avg_iterations_per_module": 2.988,
+      "convergence_rate": 0.0813,
+      "premature_escalation_rate": 0.9187,
+      "avg_iterations_on_unconvergeable_modules": 3.0,
+      "budget": 3
+    },
+    {
+      "n_modules": 600,
+      "n_convergeable": 578,
+      "n_unconvergeable": 22,
+      "total_iterations_consumed": 2346,
+      "avg_iterations_per_module": 3.91,
+      "convergence_rate": 0.2647,
+      "premature_escalation_rate": 0.7353,
+      "avg_iterations_on_unconvergeable_modules": 4.0,
+      "budget": 4
+    },
+    {
+      "n_modules": 600,
+      "n_convergeable": 578,
+      "n_unconvergeable": 22,
+      "total_iterations_consumed": 2793,
+      "avg_iterations_per_module": 4.655,
+      "convergence_rate": 0.4567,
+      "premature_escalation_rate": 0.5433,
+      "avg_iterations_on_unconvergeable_modules": 5.0,
+      "budget": 5
+    },
+    {
+      "n_modules": 600,
+      "n_convergeable": 578,
+      "n_unconvergeable": 22,
+      "total_iterations_consumed": 3129,
+      "avg_iterations_per_module": 5.215,
+      "convergence_rate": 0.5986,
+      "premature_escalation_rate": 0.4014,
+      "avg_iterations_on_unconvergeable_modules": 6.0,
+      "budget": 6
+    },
+    {
+      "n_modules": 600,
+      "n_convergeable": 578,
+      "n_unconvergeable": 22,
+      "total_iterations_consumed": 3383,
+      "avg_iterations_per_module": 5.638,
+      "convergence_rate": 0.7093,
+      "premature_escalation_rate": 0.2907,
+      "avg_iterations_on_unconvergeable_modules": 7.0,
+      "budget": 7
+    },
+    {
+      "n_modules": 600,
+      "n_convergeable": 578,
+      "n_unconvergeable": 22,
+      "total_iterations_consumed": 3573,
+      "avg_iterations_per_module": 5.955,
+      "convergence_rate": 0.8062,
+      "premature_escalation_rate": 0.1938,
+      "avg_iterations_on_unconvergeable_modules": 8.0,
+      "budget": 8
+    },
+    {
+      "n_modules": 600,
+      "n_convergeable": 578,
+      "n_unconvergeable": 22,
+      "total_iterations_consumed": 3707,
+      "avg_iterations_per_module": 6.178,
+      "convergence_rate": 0.8737,
+      "premature_escalation_rate": 0.1263,
+      "avg_iterations_on_unconvergeable_modules": 9.0,
+      "budget": 9
+    },
+    {
+      "n_modules": 600,
+      "n_convergeable": 578,
+      "n_unconvergeable": 22,
+      "total_iterations_consumed": 3802,
+      "avg_iterations_per_module": 6.337,
+      "convergence_rate": 0.9291,
+      "premature_escalation_rate": 0.0709,
+      "avg_iterations_on_unconvergeable_modules": 10.0,
+      "budget": 10
+    },
+    {
+      "n_modules": 600,
+      "n_convergeable": 578,
+      "n_unconvergeable": 22,
+      "total_iterations_consumed": 3865,
+      "avg_iterations_per_module": 6.442,
+      "convergence_rate": 0.9481,
+      "premature_escalation_rate": 0.0519,
+      "avg_iterations_on_unconvergeable_modules": 11.0,
+      "budget": 11
+    },
+    {
+      "n_modules": 600,
+      "n_convergeable": 578,
+      "n_unconvergeable": 22,
+      "total_iterations_consumed": 3917,
+      "avg_iterations_per_module": 6.528,
+      "convergence_rate": 0.9689,
+      "premature_escalation_rate": 0.0311,
+      "avg_iterations_on_unconvergeable_modules": 12.0,
+      "budget": 12
+    },
+    {
+      "n_modules": 600,
+      "n_convergeable": 578,
+      "n_unconvergeable": 22,
+      "total_iterations_consumed": 3991,
+      "avg_iterations_per_module": 6.652,
+      "convergence_rate": 0.9896,
+      "premature_escalation_rate": 0.0104,
+      "avg_iterations_on_unconvergeable_modules": 14.0,
+      "budget": 14
+    },
+    {
+      "n_modules": 600,
+      "n_convergeable": 578,
+      "n_unconvergeable": 22,
+      "total_iterations_consumed": 4043,
+      "avg_iterations_per_module": 6.738,
+      "convergence_rate": 0.9983,
+      "premature_escalation_rate": 0.0017,
+      "avg_iterations_on_unconvergeable_modules": 16.0,
+      "budget": 16
+    }
+  ],
+  "refine_rl": {
+    "n_modules": 600,
+    "n_convergeable": 578,
+    "n_unconvergeable": 22,
+    "total_iterations_consumed": 3787,
+    "avg_iterations_per_module": 6.312,
+    "convergence_rate": 0.8806,
+    "premature_escalation_rate": 0.1194,
+    "avg_iterations_on_unconvergeable_modules": 8.364
+  }
+}

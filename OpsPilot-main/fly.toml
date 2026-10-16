@@ -1,0 +1,25 @@
+# Fly.io configuration for OpsPilot
+# Deploy with: fly launch --copy-config --yes (first time) or fly deploy
+
+primary_region = "bom"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  PYTHONUNBUFFERED = "1"
+  PYTHONPATH = "/app/src"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

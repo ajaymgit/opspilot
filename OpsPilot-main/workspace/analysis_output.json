@@ -1,0 +1,330 @@
+{
+  "source_file": "PAYROLL.CBL",
+  "language": "COBOL",
+  "program_name": "PAYROLL",
+  "sections_or_procedures": [
+    {
+      "name": "1000-MAIN-LOGIC",
+      "type": "PARAGRAPH",
+      "calls": [
+        "1100-INIT-ENVIRONMENT",
+        "2000-PROCESS-PAYROLL",
+        "3000-SUMMARY-REPORT",
+        "4000-TERMINATE-PROGRAM"
+      ],
+      "lines": [
+        44,
+        50
+      ]
+    },
+    {
+      "name": "1100-INIT-ENVIRONMENT",
+      "type": "PARAGRAPH",
+      "calls": [
+        "1200-READ-NEXT-EMP"
+      ],
+      "lines": [
+        52,
+        55
+      ]
+    },
+    {
+      "name": "1200-READ-NEXT-EMP",
+      "type": "PARAGRAPH",
+      "calls": [],
+      "lines": [
+        57,
+        59
+      ]
+    },
+    {
+      "name": "END-READ",
+      "type": "PARAGRAPH",
+      "calls": [],
+      "lines": [
+        60,
+        60
+      ]
+    },
+    {
+      "name": "2000-PROCESS-PAYROLL",
+      "type": "PARAGRAPH",
+      "calls": [],
+      "lines": [
+        62,
+        67
+      ]
+    },
+    {
+      "name": "END-EXEC",
+      "type": "PARAGRAPH",
+      "calls": [
+        "1200-READ-NEXT-EMP"
+      ],
+      "lines": [
+        68,
+        71
+      ]
+    },
+    {
+      "name": "2000-EXIT",
+      "type": "PARAGRAPH",
+      "calls": [],
+      "lines": [
+        73,
+        73
+      ]
+    },
+    {
+      "name": "EXIT",
+      "type": "PARAGRAPH",
+      "calls": [],
+      "lines": [
+        74,
+        74
+      ]
+    },
+    {
+      "name": "3000-SUMMARY-REPORT",
+      "type": "PARAGRAPH",
+      "calls": [],
+      "lines": [
+        76,
+        77
+      ]
+    },
+    {
+      "name": "4000-TERMINATE-PROGRAM",
+      "type": "PARAGRAPH",
+      "calls": [],
+      "lines": [
+        79,
+        80
+      ]
+    }
+  ],
+  "call_graph": {
+    "nodes": [
+      "1000-MAIN-LOGIC",
+      "1100-INIT-ENVIRONMENT",
+      "1200-READ-NEXT-EMP",
+      "END-READ",
+      "2000-PROCESS-PAYROLL",
+      "END-EXEC",
+      "2000-EXIT",
+      "EXIT",
+      "3000-SUMMARY-REPORT",
+      "4000-TERMINATE-PROGRAM"
+    ],
+    "edges": [
+      {
+        "caller": "1000-MAIN-LOGIC",
+        "callee": "1100-INIT-ENVIRONMENT",
+        "type": "PERFORM"
+      },
+      {
+        "caller": "1000-MAIN-LOGIC",
+        "callee": "2000-PROCESS-PAYROLL",
+        "type": "PERFORM"
+      },
+      {
+        "caller": "1000-MAIN-LOGIC",
+        "callee": "3000-SUMMARY-REPORT",
+        "type": "PERFORM"
+      },
+      {
+        "caller": "1000-MAIN-LOGIC",
+        "callee": "4000-TERMINATE-PROGRAM",
+        "type": "PERFORM"
+      },
+      {
+        "caller": "1100-INIT-ENVIRONMENT",
+        "callee": "1200-READ-NEXT-EMP",
+        "type": "PERFORM"
+      },
+      {
+        "caller": "2000-PROCESS-PAYROLL",
+        "callee": "2000-EXIT",
+        "type": "PERFORM_THRU"
+      },
+      {
+        "caller": "END-EXEC",
+        "callee": "1200-READ-NEXT-EMP",
+        "type": "PERFORM"
+      }
+    ]
+  },
+  "data_structures": [
+    {
+      "name": "EMP-RECORD",
+      "level_or_type": "LEVEL_01",
+      "pic": "",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "EMP-ID",
+      "level_or_type": "LEVEL_05",
+      "pic": "X(",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "EMP-NAME",
+      "level_or_type": "LEVEL_05",
+      "pic": "X(",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "EMP-DEPT",
+      "level_or_type": "LEVEL_05",
+      "pic": "X(",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "EMP-SALARY-RAW",
+      "level_or_type": "LEVEL_05",
+      "pic": "9(",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "WS-FLAGS",
+      "level_or_type": "LEVEL_01",
+      "pic": "",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "WS-EOF",
+      "level_or_type": "LEVEL_05",
+      "pic": "X(",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "WS-STATUS",
+      "level_or_type": "LEVEL_05",
+      "pic": "9(",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "WS-CALCULATION-DATA",
+      "level_or_type": "LEVEL_01",
+      "pic": "",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "WS-GROSS-PAY",
+      "level_or_type": "LEVEL_05",
+      "pic": "9(",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "WS-TAX-RATE",
+      "level_or_type": "LEVEL_05",
+      "pic": "V999",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "WS-TAX-DUE",
+      "level_or_type": "LEVEL_05",
+      "pic": "9(",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "WS-NET-PAY",
+      "level_or_type": "LEVEL_05",
+      "pic": "9(",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "WS-DEDUCTIONS-REDEFINED",
+      "level_or_type": "LEVEL_01",
+      "pic": "",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "WS-DED-PACKED",
+      "level_or_type": "LEVEL_05",
+      "pic": "X(",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "WS-DED-NUMERIC",
+      "level_or_type": "LEVEL_05",
+      "pic": "9(",
+      "redefines": "WS-DED-PACKED",
+      "occurs": 0
+    },
+    {
+      "name": "WS-BENEFITS-TABLE",
+      "level_or_type": "LEVEL_01",
+      "pic": "",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "WS-BENEFIT-ITEM",
+      "level_or_type": "LEVEL_05",
+      "pic": "",
+      "redefines": "",
+      "occurs": 5
+    },
+    {
+      "name": "BENEFIT-CODE",
+      "level_or_type": "LEVEL_10",
+      "pic": "X(",
+      "redefines": "",
+      "occurs": 0
+    },
+    {
+      "name": "BENEFIT-AMT",
+      "level_or_type": "LEVEL_10",
+      "pic": "9(",
+      "redefines": "",
+      "occurs": 0
+    }
+  ],
+  "copybooks_or_includes": [
+    "EMPREC.CPY."
+  ],
+  "embedded_sql": [
+    {
+      "statement_type": "INCLUDE",
+      "tables": [],
+      "columns": [],
+      "raw_sql": "INCLUDE SQLCA"
+    },
+    {
+      "statement_type": "SELECT",
+      "tables": [
+        "TAX_RATES"
+      ],
+      "columns": [],
+      "raw_sql": "SELECT TAX_PERCENT INTO :WS-TAX-RATE\n               FROM TAX_RATES\n               WHERE DEPT_ID = :EMP-DEPT"
+    }
+  ],
+  "external_calls": [
+    {
+      "target": "TAXCALC",
+      "call_type": "CALL",
+      "parameters": [
+        "BY",
+        "REFERENCE",
+        "WS-GROSS-PAY",
+        "WS-TAX-DUE."
+      ]
+    }
+  ]
+}

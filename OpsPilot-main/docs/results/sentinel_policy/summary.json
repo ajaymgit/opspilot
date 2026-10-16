@@ -1,0 +1,25 @@
+{
+  "n_train": 5000,
+  "n_holdout": 1200,
+  "static_threshold": 0.25,
+  "n_injected_hard_violations_holdout": 3,
+  "static_hard_violation_catch_rate": 1.0,
+  "adaptive_hard_violation_catch_rate": 1.0,
+  "holdout_static": {
+    "n_category_decisions": 8379,
+    "flag_rate": 0.4764,
+    "wasted_escalation_rate": 0.1053,
+    "override_rate_given_flagged": 0.2209,
+    "miss_rate_given_approved": 0.0586
+  },
+  "holdout_adaptive_frozen": {
+    "n_category_decisions": 8379,
+    "flag_rate": 0.1281,
+    "wasted_escalation_rate": 0.005,
+    "override_rate_given_flagged": 0.0391,
+    "miss_rate_given_approved": 0.0515
+  },
+  "wasted_escalation_rate_relative_change": -0.9525,
+  "training_curve_first_window_wasted_escalation_rate": 0.055,
+  "training_curve_last_window_wasted_escalation_rate": 0.0
+}

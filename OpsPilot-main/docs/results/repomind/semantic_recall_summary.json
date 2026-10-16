@@ -1,0 +1,9 @@
+{
+  "n_corpus_entries": 150,
+  "n_topics": 5,
+  "top_k": 5,
+  "n_queries": 200,
+  "semantic_memory_avg_precision_at_k": 1.0,
+  "random_baseline_avg_precision_at_k": 0.206,
+  "topic_base_rate": 0.2
+}

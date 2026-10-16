@@ -1,0 +1,182 @@
+Metadata-Version: 2.4
+Name: opspilot
+Version: 0.1.0
+Summary: Legacy-code modernization system using Hybrid Nested-Orchestration Architecture
+Author: OpsPilot Team
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: pyautogen>=0.2.0
+Requires-Dist: tree-sitter>=0.20.0
+Requires-Dist: networkx>=3.0
+Requires-Dist: jsonschema>=4.0
+Requires-Dist: pydantic>=2.0
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: numpy>=1.24
+Requires-Dist: scikit-learn>=1.3
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0; extra == "dev"
+Provides-Extra: extension-plots
+Requires-Dist: matplotlib>=3.7; extra == "extension-plots"
+Requires-Dist: pandas>=2.0; extra == "extension-plots"
+
+# OpsPilot 🚀
+
+> **Legacy-Code Modernization System with Hybrid Nested-Orchestration Architecture**
+
+OpsPilot automates the conversion of legacy procedural source code (COBOL, PL-SQL) into modern Java Spring Boot microservices. It enforces strict phase isolation, deterministic AST extraction, bounded multi-agent self-refinement, and hardcoded Python guardrails.
+
+---
+
+## 🏛️ Key Architectural Principles
+
+1. **Deterministic Parsing First**: Raw legacy code is never sent to an LLM for AST parsing. Deterministic static parsers parse structure into JSON Schema-validated summaries.
+2. **Sequential Python Control Plane**: No monolithic `GroupChat`. Pipeline phases are orchestrated by plain Python state machine triggers.
+3. **Isolated 2-Agent Self-Refine Loop**: Inner code generation and verification is handled solely by `Coder` and `Verifier` with a hard iteration budget ($B=10$).
+4. **Hard Interceptor Guardrails**: Security and governance checks are deterministic Python functions registered at `position=0` before any execution occurs.
+
+---
+
+## 🧩 OpsPilot+ Research Extensions
+
+Three optional, additive extensions implement research directions the
+[accompanying survey](Multi-Agent_Orchestration_for_Legacy_Toolchain_Modernization.pdf)
+names as open gaps, without altering the base pipeline's default behavior.
+All default to **disabled** in `config/llm_config.yaml`; enable via the
+`extensions:` block. See `docs/IMPLEMENTATION_NOTES.md` for the full
+rationale (what was implemented, what was deliberately left out, and why) and
+`docs/EVALUATION_RESULTS.md` for real, reproducible evaluation numbers.
+
+| Extension | Closes gap | What it does |
+|---|---|---|
+| **SentinelPolicy** (`governance/sentinel_policy/`) | G9: guardrail stagnation | Learns per-risk-category acceptance thresholds from simulated HITL override outcomes via a Thompson-sampling bandit, without ever touching the hard-constraint denylist |
+| **RefineRL** (`execution/refine_rl/`) | Fixed self-refine iteration budget (Sec. VI) | Predicts a per-module iteration budget from Discovery-time features, then adjusts it online as the self-refine trajectory unfolds |
+| **RepoMind** (`memory/`) | Repo-scale project memory (Sec. V-A, VII) | Persistent cross-module dependency graph + semantic decision memory, with a change-propagation agent that schedules targeted re-verification |
+
+Run all three evaluation harnesses and reproduce the numbers in
+`docs/EVALUATION_RESULTS.md`:
+
+```bash
+python -m opspilot.cli evaluate-extensions all --output-dir workspace/extension_eval
+```
+
+---
+
+## 📁 Repository Structure
+
+```
+opspilot/
+├── pyproject.toml               # Package config & dependencies
+├── README.md                    # System documentation
+├── ARCHITECTURE.md              # Architectural specification & safeguards
+├── Makefile                     # Standard development commands
+├── config/
+│   └── llm_config.yaml          # Model parameters, timeouts, budget B
+├── src/
+│   └── opspilot/
+│       ├── __init__.py
+│       ├── cli.py               # CLI entrypoint
+│       ├── analysis/            # Phase 1: Parsers & AST Extraction
+│       │   ├── parsers/
+│       │   │   ├── cobol_parser.py
+│       │   │   ├── plsql_parser.py
+│       │   │   └── tree_sitter_utils.py
+│       │   ├── dependency_graph.py
+│       │   └── analysis_agent.py
+│       ├── orchestration/       # Phase 2: Master Control Plane
+│       │   ├── master_orchestrator.py
+│       │   └── pipeline_state.py
+│       ├── execution/           # Phase 3: Bounded Coder-Verifier Loop
+│       │   ├── coder_agent.py
+│       │   ├── verifier_agent.py
+│       │   ├── self_refine_loop.py
+│       │   └── refine_rl/       # OpsPilot+: predictive iteration budget (Idea 8)
+│       ├── governance/          # Phase 4: Deterministic Guardrails
+│       │   ├── guardrail_rules.py
+│       │   ├── guardrail_interceptor.py
+│       │   └── sentinel_policy/ # OpsPilot+: adaptive guardrail thresholds (Idea 2)
+│       ├── memory/              # OpsPilot+: repo-scale memory & propagation (Idea 4)
+│       └── utils/               # Infrastructure & Logging
+│           ├── logging_utils.py
+│           └── json_schema.py
+├── docs/
+│   ├── IMPLEMENTATION_NOTES.md  # Advisor rationale: scope, decisions, honest results
+│   ├── EVALUATION_RESULTS.md    # Reproducible evaluation numbers + plots
+│   └── results/                 # Generated plots and raw evaluation JSON/CSV
+├── workspace/                   # Sandboxed execution workspace
+├── tests/                       # Complete pytest suite (59 tests)
+└── examples/
+    └── sample_legacy/
+        ├── PAYROLL.CBL          # COBOL sample source
+        └── ORDERS.SQL           # PL/SQL sample source
+```
+
+---
+
+## ⚙️ Setup & Installation
+
+### Prerequisites
+- Python 3.10+
+- (Optional) Docker for containerized verification sandbox
+
+### Virtual Environment Setup
+```bash
+python -m venv .venv
+# On Windows:
+.\.venv\Scripts\activate
+# On Linux/macOS:
+source .venv/bin/activate
+
+pip install -e .[dev]
+```
+
+### Environment Variables
+Set your LLM provider configuration (OpenAI / Azure / Custom):
+```bash
+export OPENAI_API_KEY="your-api-key"
+```
+
+---
+
+## 🛠️ Usage
+
+### Analyze Legacy Code (Phase 1 Only)
+```bash
+python -m opspilot.cli analyze examples/sample_legacy/PAYROLL.CBL
+```
+
+### Run Full Modernization Pipeline
+```bash
+python -m opspilot.cli run-pipeline examples/sample_legacy/PAYROLL.CBL
+```
+
+### Running via Makefile
+```bash
+make analyze FILE=examples/sample_legacy/PAYROLL.CBL
+make run-pipeline FILE=examples/sample_legacy/ORDERS.SQL
+make test
+make lint
+```
+
+### Run an OpsPilot+ extension evaluation
+```bash
+python -m opspilot.cli evaluate-extensions all --output-dir workspace/extension_eval
+# or individually:
+python -m opspilot.cli evaluate-extensions sentinel_policy
+python -m opspilot.cli evaluate-extensions refine_rl
+python -m opspilot.cli evaluate-extensions repo_mind
+```
+
+### Enable an extension in the live pipeline
+Set `extensions.<name>.enabled: true` in `config/llm_config.yaml`, then run
+`run-pipeline` as usual. See `docs/IMPLEMENTATION_NOTES.md` for what each
+extension does when active.
+
+---
+
+## 🧪 Testing
+
+Run all unit and integration tests:
+```bash
+pytest -v tests/
+```

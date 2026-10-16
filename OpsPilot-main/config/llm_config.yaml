@@ -1,0 +1,42 @@
+# OpsPilot Configuration Matrix
+
+llm:
+  model: "gpt-4o"
+  temperature: 0.2
+  max_tokens: 4096
+  request_timeout: 120
+  retry_policy:
+    max_retries: 3
+    backoff_factor: 2
+
+pipeline:
+  phase3_iteration_budget: 10
+  sandbox:
+    use_docker: false  # Default fallback to local workspace execution
+    work_dir: "workspace"
+  guardrails:
+    enforce_strict: true
+    log_file: "workspace/guardrail_log.json"
+  output_dir: "workspace"
+
+# OpsPilot+ research extensions (Idea 2 / Idea 8 / Idea 4). All default to
+# disabled so the base 4-phase pipeline's behavior is byte-for-byte unchanged
+# unless explicitly opted into. See docs/IMPLEMENTATION_NOTES.md.
+extensions:
+  sentinel_policy:
+    enabled: false
+    # informational by default: logs an adaptive soft-risk decision alongside
+    # the existing hard-constraint guardrail log, without altering pipeline
+    # pass/fail. Set enforce: true to let a REJECT from the soft layer also
+    # fail the pipeline (still never overrides the hard-constraint layer).
+    enforce: false
+    bandit_state_file: "workspace/sentinel_policy_bandit.json"
+    decision_log_file: "workspace/sentinel_policy_decisions.json"
+  refine_rl:
+    enabled: false
+    history_file: "workspace/refine_rl_history.json"
+    min_training_samples: 20
+  repo_mind:
+    enabled: false
+    dependency_graph_file: "workspace/repo_dependency_graph.json"
+    semantic_memory_file: "workspace/semantic_memory.json"

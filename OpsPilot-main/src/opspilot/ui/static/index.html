@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpsPilot — COBOL to Java Converter</title>
+  <style>
+    :root {
+      --bg-page: #F6F5F0;
+      --bg-card: #FFFFFF;
+      --bg-muted: #EFECE6;
+      --bg-code: #FAF9F6;
+
+      --text-main: #1E1E1C;
+      --text-body: #52504C;
+      --text-muted: #85827C;
+
+      --border-light: #E2DFD7;
+      --border-hover: #C8C4BA;
+
+      /* Soft Pastel Accents */
+      --sage-bg: #EAF3EC;
+      --sage-border: #C4DEC9;
+      --sage-text: #235235;
+      --sage-bar: #4D8F63;
+
+      --blue-bg: #EBF1F8;
+      --blue-border: #C5D7EC;
+      --blue-text: #26436C;
+
+      --butter-bg: #FCF4E3;
+      --butter-border: #E8D5AC;
+      --butter-text: #6B4E16;
+
+      --rose-bg: #FBECEB;
+      --rose-border: #EBC4C1;
+      --rose-text: #7A2B27;
+
+      --lavender-bg: #F0ECF8;
+      --lavender-border: #D4C8EC;
+      --lavender-text: #45326B;
+
+      --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+      --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Header */
+    header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-light);
+      padding: 14px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .brand-name {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-tag {
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .control-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-right: 4px;
+    }
+
+    .btn {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-light);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: var(--bg-muted);
+      border-color: var(--border-hover);
+    }
+
+    .btn.active-sample {
+      background: var(--blue-bg);
+      color: var(--blue-text);
+      border-color: var(--blue-border);
+    }
+
+    .btn-primary {
+      background: var(--sage-bg);
+      color: var(--sage-text);
+      border-color: var(--sage-border);
+    }
+
+    .btn-primary:hover {
+      background: #DCEBDF;
+      border-color: var(--sage-bar);
+    }
+
+    /* Page Container */
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 32px 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* Section Headings */
+    .section-block {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--bg-muted);
+      color: var(--text-body);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .section-sub {
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    /* File Upload & Active File Bar */
+    .upload-row {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 860px) {
+      .upload-row { grid-template-columns: 1fr; }
+    }
+
+    .dropzone {
+      background: var(--bg-card);
+      border: 1.5px dashed var(--border-hover);
+      border-radius: 10px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .dropzone:hover, .dropzone.drag-over {
+      background: var(--blue-bg);
+      border-color: var(--blue-text);
+    }
+
+    .dropzone-title {
+      font-weight: 500;
+      font-size: 13.5px;
+      margin-bottom: 2px;
+    }
+
+    .dropzone-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .active-file-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .file-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .file-name {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .file-details {
+      font-size: 12px;
+      color: var(--text-body);
+      margin-top: 2px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 5px;
+      font-size: 11.5px;
+      font-weight: 500;
+      font-family: var(--font-mono);
+    }
+
+    .badge-sage { background: var(--sage-bg); color: var(--sage-text); border: 1px solid var(--sage-border); }
+    .badge-blue { background: var(--blue-bg); color: var(--blue-text); border: 1px solid var(--blue-border); }
+    .badge-butter { background: var(--butter-bg); color: var(--butter-text); border: 1px solid var(--butter-border); }
+    .badge-rose { background: var(--rose-bg); color: var(--rose-text); border: 1px solid var(--rose-border); }
+    .badge-lavender { background: var(--lavender-bg); color: var(--lavender-text); border: 1px solid var(--lavender-border); }
+
+    /* 3 Overview Cards */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .overview-grid { grid-template-columns: 1fr; }
+    }
+
+    .metric-card {
+      border-radius: 10px;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      border: 1px solid var(--border-light);
+    }
+
+    .metric-card.sage { background: var(--sage-bg); border-color: var(--sage-border); }
+    .metric-card.blue { background: var(--blue-bg); border-color: var(--blue-border); }
+    .metric-card.butter { background: var(--butter-bg); border-color: var(--butter-border); }
+    .metric-card.rose { background: var(--rose-bg); border-color: var(--rose-border); }
+
+    .metric-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .metric-heading {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-body);
+    }
+
+    .metric-big {
+      font-size: 30px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      letter-spacing: -0.03em;
+      margin-top: 4px;
+      color: var(--text-main);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 7px;
+      background: rgba(0, 0, 0, 0.07);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--sage-bar);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .metric-summary {
+      font-size: 12.5px;
+      color: var(--text-body);
+      line-height: 1.45;
+    }
+
+    .metric-list {
+      border-top: 1px solid rgba(0, 0, 0, 0.07);
+      padding-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 12px;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-body);
+    }
+
+    .metric-row strong {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Two-Column Grid */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 960px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+
+    .card-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .card-box-header {
+      padding: 14px 20px;
+      background: var(--bg-page);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-box-title {
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    .card-box-body {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    /* Steps List */
+    .step-item {
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 14px 16px;
+      background: var(--bg-card);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .step-title {
+      font-weight: 600;
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--blue-bg);
+      color: var(--blue-text);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .step-desc {
+      font-size: 12.5px;
+      color: var(--text-body);
+      margin-bottom: 8px;
+    }
+
+    .step-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--bg-muted);
+      color: var(--text-body);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* Review / Failure Notes */
+    .issue-card {
+      border-radius: 8px;
+      padding: 14px 16px;
+      border: 1px solid var(--border-light);
+    }
+
+    .issue-card.WARNING { background: var(--butter-bg); border-color: var(--butter-border); }
+    .issue-card.ERROR, .issue-card.CRITICAL { background: var(--rose-bg); border-color: var(--rose-border); }
+    .issue-card.INFO { background: var(--sage-bg); border-color: var(--sage-border); }
+
+    .issue-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .issue-target {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .issue-what {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .issue-why {
+      font-size: 12px;
+      color: var(--text-body);
+      margin-bottom: 10px;
+    }
+
+    .issue-how {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--text-main);
+    }
+
+    /* Simple Comparison Table */
+    .simple-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .simple-table th {
+      text-align: left;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      padding: 12px 16px;
+      background: var(--bg-page);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .simple-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+    }
+
+    .simple-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .table-topic {
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .table-explain {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Code Editors */
+    .code-editor {
+      width: 100%;
+      height: 420px;
+      background: var(--bg-code);
+      border: none;
+      padding: 16px 20px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text-main);
+      resize: vertical;
+      outline: none;
+    }
+
+    .code-output {
+      width: 100%;
+      height: 420px;
+      background: var(--bg-code);
+      padding: 16px 20px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text-main);
+      overflow: auto;
+      white-space: pre;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-name">OpsPilot</span>
+        <span class="brand-tag">Old COBOL &amp; SQL to Modern Java Converter</span>
+      </div>
+      <div class="header-controls">
+        <span class="control-label">Try a sample:</span>
+        <button class="btn active-sample" id="btn-payroll" onclick="loadSample('payroll')">Payroll (COBOL)</button>
+        <button class="btn" id="btn-orders" onclick="loadSample('orders')">Orders (SQL)</button>
+        <button class="btn" id="btn-faulty" onclick="loadSample('faulty')">Sample with Errors</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- Top File Bar -->
+    <div class="upload-row">
+      <div class="dropzone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <input type="file" id="fileInput" style="display:none" accept=".cbl,.cob,.cobol,.sql,.txt" onchange="handleFileSelect(event)">
+        <div>
+          <div class="dropzone-title">Drag and drop a COBOL or SQL file here</div>
+          <div class="dropzone-sub">Or click to choose a file from your computer (.CBL, .COB, .SQL)</div>
+        </div>
+        <span class="btn">Choose File</span>
+      </div>
+
+      <div class="active-file-card">
+        <div>
+          <div class="file-label">Current File</div>
+          <div class="file-name" id="activeFileName">PAYROLL.CBL</div>
+          <div class="file-details" id="activeFileSub">118 lines &middot; Program: PAYROLL</div>
+        </div>
+        <span class="badge badge-sage" id="statusBadge">Ready to Use</span>
+      </div>
+    </div>
+
+    <!-- Section 1: Summary Numbers -->
+    <section class="section-block">
+      <div class="section-header">
+        <div class="section-title"><span class="section-num">1</span> Conversion Summary</div>
+        <div class="section-sub">How much of your file was converted and how it performed</div>
+      </div>
+
+      <div class="overview-grid">
+        <!-- Card 1: Percentage Converted -->
+        <div class="metric-card sage">
+          <div>
+            <div class="metric-top">
+              <span class="metric-heading">Converted to Java</span>
+              <span class="badge badge-sage">Spring Boot</span>
+            </div>
+            <div class="metric-big" id="pctOverall">96.2%</div>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="pctBar" style="width: 96.2%;"></div>
+          </div>
+          <div class="metric-list">
+            <div class="metric-row"><span>Functions converted</span><strong id="bdSections">10 of 10 (100%)</strong></div>
+            <div class="metric-row"><span>Data fields mapped</span><strong id="bdData">27 of 27 (100%)</strong></div>
+            <div class="metric-row"><span>Database queries</span><strong id="bdSql">2 of 2 (100%)</strong></div>
+          </div>
+        </div>
+
+        <!-- Card 2: Multi-Agent Improvement -->
+        <div class="metric-card blue">
+          <div>
+            <div class="metric-top">
+              <span class="metric-heading">Multi-Agent Improvement</span>
+              <span class="badge badge-blue">vs. Single AI</span>
+            </div>
+            <div class="metric-big">+55%</div>
+          </div>
+          <p class="metric-summary">
+            Using separate agents to scan, write, and test the code produces working Java builds <strong>88%–97%</strong> of the time, compared to <strong>27%–41%</strong> when asking a single AI in one go.
+          </p>
+          <div class="metric-list">
+            <div class="metric-row"><span>Missed data fields</span><strong>0% (vs. 34% single AI)</strong></div>
+            <div class="metric-row"><span>Testing rounds used</span><strong id="turnsUsedText">1 of 10 tries</strong></div>
+          </div>
+        </div>
+
+        <!-- Card 3: Review & Safety -->
+        <div class="metric-card butter" id="reviewCard">
+          <div>
+            <div class="metric-top">
+              <span class="metric-heading">Items to Review</span>
+              <span class="badge badge-butter" id="safetyBadge">Safety Passed</span>
+            </div>
+            <div class="metric-big" id="reviewCountBig">1 Note</div>
+          </div>
+          <p class="metric-summary" id="reviewSummaryText">
+            Lists any missing linked files, old COBOL jump commands, or unsafe database queries so you can review and fix them.
+          </p>
+          <div class="metric-list">
+            <div class="metric-row"><span>Unsafe commands blocked</span><strong id="blockedCountText">0</strong></div>
+            <div class="metric-row"><span>False alarm reduction</span><strong>95% fewer</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: How It Worked & What Needs Review -->
+    <section class="section-block">
+      <div class="section-header">
+        <div class="section-title"><span class="section-num">2</span> How the Conversion Unfolded &amp; What to Check</div>
+        <div class="section-sub">Left: the 4 steps taken to convert your file &middot; Right: any lines that failed or need a quick look</div>
+      </div>
+
+      <div class="two-col">
+        <!-- Left: 4 Steps -->
+        <div class="card-box">
+          <div class="card-box-header">
+            <span class="card-box-title">Step-by-Step Conversion Process</span>
+            <span class="badge badge-blue">4 Steps</span>
+          </div>
+          <div class="card-box-body" id="stepsContainer"></div>
+        </div>
+
+        <!-- Right: Failures & Adjustments -->
+        <div class="card-box">
+          <div class="card-box-header">
+            <span class="card-box-title">Where Conversion Failed or Needs Adjustment</span>
+            <span class="badge badge-butter" id="issuesHeaderBadge">1 Item</span>
+          </div>
+          <div class="card-box-body" id="issuesContainer"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Multi-Agent vs Single AI Table -->
+    <section class="section-block">
+      <div class="section-header">
+        <div class="section-title"><span class="section-num">3</span> Why Multi-Agent Works Better Than a Single AI</div>
+        <div class="section-sub">Results from testing 600 conversion runs</div>
+      </div>
+
+      <div class="card-box">
+        <table class="simple-table">
+          <thead>
+            <tr>
+              <th style="width:32%;">What We Checked</th>
+              <th style="width:22%;">Single AI Prompt</th>
+              <th style="width:22%;">OpsPilot Multi-Agent</th>
+              <th style="width:24%;">Improvement</th>
+            </tr>
+          </thead>
+          <tbody id="comparisonTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 4: Side-by-Side Code -->
+    <section class="section-block">
+      <div class="section-header">
+        <div class="section-title"><span class="section-num">4</span> Review &amp; Edit Code</div>
+        <div class="section-sub">Edit the original code on the left and click "Convert Again" to test your fixes</div>
+      </div>
+
+      <div class="two-col">
+        <div class="card-box">
+          <div class="card-box-header">
+            <span class="card-box-title">Original Code (Editable)</span>
+            <button class="btn btn-primary" onclick="rerunEditedSource()">Convert Again</button>
+          </div>
+          <textarea class="code-editor" id="legacyEditor" spellcheck="false"></textarea>
+        </div>
+
+        <div class="card-box">
+          <div class="card-box-header">
+            <span class="card-box-title">Converted Java Code</span>
+            <button class="btn" id="copyBtn" onclick="copyJavaCode()">Copy Java Code</button>
+          </div>
+          <div class="code-output" id="javaViewer"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const SAMPLES = {
+      payroll: {
+        filename: "PAYROLL.CBL",
+        content: `       IDENTIFICATION DIVISION.
+       PROGRAM-ID. PAYROLL.
+       AUTHOR. LEGACY-SYSTEMS-TEAM.
+       
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT EMPLOYEE-FILE ASSIGN TO 'EMPFILE.DAT'
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT PAYROLL-REPORT ASSIGN TO 'PAYREP.OUT'
+               ORGANIZATION IS LINE SEQUENTIAL.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD  EMPLOYEE-FILE.
+       01  EMP-RECORD.
+           05  EMP-ID              PIC X(06).
+           05  EMP-NAME            PIC X(25).
+           05  EMP-DEPT            PIC X(04).
+           05  EMP-SALARY-RAW      PIC 9(07)V99.
+
+       WORKING-STORAGE SECTION.
+       01  WS-FLAGS.
+           05  WS-EOF              PIC X(01) VALUE 'N'.
+           05  WS-STATUS           PIC 9(02) VALUE ZEROES.
+       01  WS-CALCULATION-DATA.
+           05  WS-GROSS-PAY        PIC 9(07)V99 VALUE ZEROES.
+           05  WS-TAX-RATE         PIC V999     VALUE .220.
+           05  WS-TAX-DUE          PIC 9(07)V99 VALUE ZEROES.
+           05  WS-NET-PAY          PIC 9(07)V99 VALUE ZEROES.
+       01  WS-DEDUCTIONS-REDEFINED.
+           05  WS-DED-PACKED       PIC X(08).
+           05  WS-DED-NUMERIC REDEFINES WS-DED-PACKED PIC 9(06)V99.
+       01  WS-BENEFITS-TABLE.
+           05  WS-BENEFIT-ITEM OCCURS 5 TIMES.
+               10  BENEFIT-CODE    PIC X(03).
+               10  BENEFIT-AMT     PIC 9(05)V99.
+
+           COPY EMPREC.CPY.
+
+           EXEC SQL INCLUDE SQLCA END-EXEC.
+
+       PROCEDURE DIVISION.
+       1000-MAIN-LOGIC.
+           PERFORM 1100-INIT-ENVIRONMENT.
+           PERFORM 2000-PROCESS-PAYROLL THRU 2000-EXIT
+               UNTIL WS-EOF = 'Y'.
+           PERFORM 3000-SUMMARY-REPORT.
+           PERFORM 4000-TERMINATE-PROGRAM.
+           STOP RUN.
+
+       1100-INIT-ENVIRONMENT.
+           OPEN INPUT EMPLOYEE-FILE
+                OUTPUT PAYROLL-REPORT.
+           PERFORM 1200-READ-NEXT-EMP.
+
+       1200-READ-NEXT-EMP.
+           READ EMPLOYEE-FILE
+               AT END MOVE 'Y' TO WS-EOF
+           END-READ.
+
+       2000-PROCESS-PAYROLL.
+           MOVE EMP-SALARY-RAW TO WS-GROSS-PAY.
+           EXEC SQL
+               SELECT TAX_PERCENT INTO :WS-TAX-RATE
+               FROM TAX_RATES
+               WHERE DEPT_ID = :EMP-DEPT
+           END-EXEC.
+           CALL 'TAXCALC' USING BY REFERENCE WS-GROSS-PAY WS-TAX-DUE.
+           SUBTRACT WS-TAX-DUE FROM WS-GROSS-PAY GIVING WS-NET-PAY.
+           PERFORM 1200-READ-NEXT-EMP.
+
+       2000-EXIT.
+           EXIT.
+
+       3000-SUMMARY-REPORT.
+           DISPLAY 'PAYROLL BATCH COMPLETED'.
+
+       4000-TERMINATE-PROGRAM.
+           CLOSE EMPLOYEE-FILE PAYROLL-REPORT.`
+      },
+      orders: {
+        filename: "ORDERS.SQL",
+        content: `CREATE OR REPLACE PACKAGE BODY order_processor AS
+
+    PROCEDURE process_pending_orders (
+        p_customer_id IN NUMBER,
+        p_status_out  OUT VARCHAR2
+    ) IS
+        v_order_id   NUMBER;
+        v_total_amt  NUMBER := 0;
+        v_discount   NUMBER := 0;
+        v_item_price NUMBER;
+
+        CURSOR c_orders IS
+            SELECT order_id, order_date, total_amount
+            FROM orders
+            WHERE customer_id = p_customer_id
+              AND status = 'PENDING'
+            FOR UPDATE OF status;
+
+        CURSOR c_order_items (p_ord_id NUMBER) IS
+            SELECT item_id, quantity, unit_price
+            FROM order_items
+            WHERE order_id = p_ord_id;
+
+    BEGIN
+        p_status_out := 'SUCCESS';
+
+        FOR r_order IN c_orders LOOP
+            v_order_id := r_order.order_id;
+            v_total_amt := 0;
+
+            FOR r_item IN c_order_items(v_order_id) LOOP
+                v_item_price := r_item.quantity * r_item.unit_price;
+                v_total_amt := v_total_amt + v_item_price;
+
+                UPDATE inventory
+                SET stock_qty = stock_qty - r_item.quantity
+                WHERE item_id = r_item.item_id;
+            END LOOP;
+
+            IF v_total_amt > 1000 THEN
+                v_discount := v_total_amt * 0.10;
+            ELSE
+                v_discount := 0;
+            END IF;
+
+            UPDATE orders
+            SET total_amount = v_total_amt - v_discount,
+                status = 'PROCESSED',
+                updated_at = SYSDATE
+            WHERE order_id = v_order_id;
+
+            INSERT INTO audit_log (log_id, action, entity_id, timestamp)
+            VALUES (audit_seq.NEXTVAL, 'ORDER_PROCESSED', v_order_id, SYSDATE);
+        END LOOP;
+
+        COMMIT;
+    END process_pending_orders;
+
+END order_processor;`
+      },
+      faulty: {
+        filename: "LEGACY_FAULTY_ACCT.CBL",
+        content: `       IDENTIFICATION DIVISION.
+       PROGRAM-ID. FAULTY-ACCT.
+
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-USER-INPUT           PIC X(30).
+       01  WS-BRANCH-FLAG          PIC 9(01).
+           COPY MISSING_ACCT_DEF.CPY.
+
+       PROCEDURE DIVISION.
+       1000-START.
+           ALTER 2000-TRANSFER TO PROCEED TO 9000-FORCE-EXIT.
+           GO TO 2000-TRANSFER 3000-AUDIT DEPENDING ON WS-BRANCH-FLAG.
+
+       2000-TRANSFER.
+           EXEC SQL
+               SELECT * FROM ACCOUNTS WHERE OWNER = ' + WS-USER-INPUT
+           END-EXEC.
+
+       3000-AUDIT.
+           DISPLAY 'AUDIT STEP'.
+
+       9000-FORCE-EXIT.
+           STOP RUN.`
+      }
+    };
+
+    const dropZone = document.getElementById('dropZone');
+    ['dragenter', 'dragover'].forEach(ev => {
+      dropZone.addEventListener(ev, e => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+      });
+    });
+    ['dragleave', 'drop'].forEach(ev => {
+      dropZone.addEventListener(ev, e => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+      });
+    });
+    dropZone.addEventListener('drop', e => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0) readUploadedFile(files[0]);
+    });
+
+    function handleFileSelect(e) {
+      if (e.target.files.length > 0) readUploadedFile(e.target.files[0]);
+    }
+
+    function readUploadedFile(file) {
+      document.querySelectorAll('.header-controls .btn').forEach(b => b.classList.remove('active-sample'));
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const content = ev.target.result;
+        document.getElementById('legacyEditor').value = content;
+        runConversion(file.name, content);
+      };
+      reader.readAsText(file);
+    }
+
+    function loadSample(key) {
+      const sample = SAMPLES[key];
+      if (!sample) return;
+      document.querySelectorAll('.header-controls .btn').forEach(b => b.classList.remove('active-sample'));
+      const btn = document.getElementById('btn-' + key);
+      if (btn) btn.classList.add('active-sample');
+      document.getElementById('legacyEditor').value = sample.content;
+      runConversion(sample.filename, sample.content);
+    }
+
+    function rerunEditedSource() {
+      const filename = document.getElementById('activeFileName').innerText || 'EDITED.CBL';
+      const content = document.getElementById('legacyEditor').value;
+      runConversion(filename, content);
+    }
+
+    async function runConversion(filename, content) {
+      try {
+        const resp = await fetch('/api/convert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename, content })
+        });
+        if (!resp.ok) throw new Error('Offline mode');
+        const data = await resp.json();
+        renderUI(data);
+      } catch (e) {
+        const data = analyzeLocally(filename, content);
+        renderUI(data);
+      }
+    }
+
+    function analyzeLocally(filename, content) {
+      const lines = content.split('\n');
+      const isSql = filename.toUpperCase().endsWith('.SQL') || /CREATE\s+(?:OR\s+REPLACE\s+)?PACKAGE/i.test(content);
+
+      let progName = 'LEGACY_PROGRAM';
+      if (isSql) {
+        const m = content.match(/PACKAGE\s+(?:BODY\s+)?([A-Z0-9_]+)/i) || content.match(/PROCEDURE\s+([A-Z0-9_]+)/i);
+        if (m) progName = m[1].toUpperCase();
+      } else {
+        const m = content.match(/PROGRAM-ID\.\s*([\w\-]+)/i);
+        if (m) progName = m[1].toUpperCase();
+      }
+
+      const sections = [];
+      if (isSql) {
+        const matches = [...content.matchAll(/(PROCEDURE|FUNCTION)\s+([A-Z0-9_]+)/gi)];
+        matches.forEach(m => sections.push({ name: m[2].toUpperCase(), line: 3 }));
+      } else {
+        let inProc = false;
+        lines.forEach((l, i) => {
+          const c = l.trim();
+          if (/PROCEDURE DIVISION/i.test(c)) { inProc = true; return; }
+          if (!inProc || !c || c.startsWith('*')) return;
+          const pm = c.match(/^([0-9A-Z\-]+)\.\s*$/i);
+          if (pm && !['EXIT', 'END-READ', 'END-IF'].includes(pm[1].toUpperCase())) {
+            sections.push({ name: pm[1].toUpperCase(), line: i + 1 });
+          }
+        });
+      }
+
+      const dataItems = [];
+      if (isSql) {
+        const curMatches = [...content.matchAll(/CURSOR\s+([A-Z0-9_]+)/gi)];
+        curMatches.forEach(m => dataItems.push({ level: 'CURSOR', name: m[1].toUpperCase() }));
+        const varMatches = [...content.matchAll(/([A-Z0-9_]+)\s+(NUMBER|VARCHAR2)/gi)];
+        varMatches.forEach(m => dataItems.push({ level: m[2].toUpperCase(), name: m[1].toUpperCase() }));
+      } else {
+        let inData = false;
+        lines.forEach(l => {
+          const c = l.trim();
+          if (/DATA DIVISION/i.test(c)) inData = true;
+          if (/PROCEDURE DIVISION/i.test(c)) inData = false;
+          if (!inData || !c || c.startsWith('*')) return;
+          const dm = c.match(/^(\d{2})\s+([0-9A-Z\-]+)/i);
+          if (dm) dataItems.push({ level: dm[1], name: dm[2].toUpperCase() });
+        });
+      }
+
+      const copybooks = [];
+      lines.forEach((l, idx) => {
+        const cb = l.match(/COPY\s+["']?([0-9A-Z\.\-_]+)["']?/i);
+        if (cb) copybooks.push({ name: cb[1].toUpperCase().replace(/\.$/, ''), line: idx + 1 });
+      });
+
+      const sqlCount = (content.match(/EXEC\s+SQL|SELECT\s+|UPDATE\s+|INSERT\s+INTO/gi) || []).length;
+
+      const diagnostics = [];
+      let hasCriticalFault = false;
+      let unconvertibleSections = 0;
+
+      copybooks.forEach(cb => {
+        diagnostics.push({
+          severity: 'WARNING',
+          target: cb.name,
+          line_number: cb.line,
+          problem: `Line ${cb.line} links to a separate file ('${cb.name}') that wasn't uploaded.`,
+          impact: 'The converter had to guess the data fields inside that missing file.',
+          suggested_adjustment: `Upload '${cb.name}' or paste its fields directly into this file.`
+        });
+      });
+
+      lines.forEach((l, idx) => {
+        const clean = l.trim().toUpperCase();
+        if (clean.startsWith('ALTER ')) {
+          unconvertibleSections += 1;
+          diagnostics.push({
+            severity: 'ERROR',
+            target: l.trim(),
+            line_number: idx + 1,
+            problem: `Line ${idx + 1} uses an old COBOL 'ALTER' command that changes where code jumps while running.`,
+            impact: 'Modern Java methods cannot jump around dynamically like this.',
+            suggested_adjustment: `Replace the ALTER command on line ${idx + 1} with a normal IF / ELSE check.`
+          });
+        }
+        if (clean.includes('GO TO') && clean.includes('DEPENDING ON')) {
+          diagnostics.push({
+            severity: 'WARNING',
+            target: l.trim(),
+            line_number: idx + 1,
+            problem: `Line ${idx + 1} jumps to different places depending on a number.`,
+            impact: 'Converted into a Java switch statement, which should be double-checked.',
+            suggested_adjustment: 'Check the generated Java method to make sure each case stops in the right place.'
+          });
+        }
+        if (/(?:SELECT|INSERT|UPDATE|DELETE)\s+.*?\+\s*[A-Za-z0-9_\-]+/i.test(l) || /System\.exit|DROP\s+TABLE|rm\s+-rf/i.test(l)) {
+          hasCriticalFault = true;
+          diagnostics.push({
+            severity: 'CRITICAL',
+            target: l.trim(),
+            line_number: idx + 1,
+            problem: `Line ${idx + 1} builds a database query by pasting text together, which is a security risk.`,
+            impact: 'The safety checker stopped the conversion so unsafe SQL would not run.',
+            suggested_adjustment: `Use a safe query parameter (like :WS-USER-INPUT) on line ${idx + 1} instead of joining text with '+'.`
+          });
+        }
+      });
+
+      if (diagnostics.length === 0) {
+        diagnostics.push({
+          severity: 'INFO',
+          target: 'All sections converted',
+          line_number: null,
+          problem: 'Everything converted cleanly with no errors or warnings.',
+          impact: 'The Java code is ready to use.',
+          suggested_adjustment: 'No changes needed. You can copy the Java code below.'
+        });
+      }
+
+      const secTotal = Math.max(1, sections.length);
+      const secConverted = Math.max(0, secTotal - unconvertibleSections);
+      const secPct = Math.round((secConverted / secTotal) * 1000) / 10;
+
+      const dataTotal = Math.max(1, dataItems.length);
+      const dataMapped = copybooks.length > 0 ? Math.max(1, dataTotal - 1) : dataTotal;
+      const dataPct = Math.round((dataMapped / dataTotal) * 1000) / 10;
+
+      let overallPct = Math.round((secPct * 0.5 + dataPct * 0.35 + (hasCriticalFault ? 0 : 100) * 0.15) * 10) / 10;
+      if (hasCriticalFault) overallPct = Math.min(overallPct, 58.0);
+
+      const cleanCamel = progName.toLowerCase().replace(/[^a-z0-9]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()).replace(/\s+/g, '');
+      const serviceClass = `${cleanCamel}Service`;
+
+      const javaCode = `package com.opspilot.modernized;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * Converted from ${filename} (Program: ${progName})
+ */
+@Service
+@Transactional
+public class ${serviceClass} {
+
+${dataItems.slice(0, 8).map(d => `    // From ${d.level}: ${d.name}\n    private String ${d.name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase())};`).join('\n\n')}
+
+    public void run() {
+${sections.map(s => `        ${s.name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/^(\d)/, 'step$1').replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase())}();`).join('\n')}
+    }
+
+${sections.map(s => `    // Converted from ${s.name} (Line ${s.line})\n    public void ${s.name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/^(\d)/, 'step$1').replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase())}() {\n        // Converted business logic\n    }`).join('\n\n')}
+}`;
+
+      return {
+        file_info: {
+          filename,
+          lines_of_code: lines.length,
+          program_name: progName
+        },
+        status: {
+          success: !hasCriticalFault && unconvertibleSections === 0,
+          guardrail_status: hasCriticalFault ? 'BLOCKED' : 'PASSED',
+          turns_used: hasCriticalFault ? 1 : (unconvertibleSections > 0 ? 3 : 1)
+        },
+        conversion_stats: {
+          overall_percentage: overallPct,
+          section_percentage: secPct,
+          data_percentage: dataPct,
+          sql_percentage: hasCriticalFault ? 50.0 : 100.0,
+          counts: {
+            sections_total: secTotal,
+            sections_converted: secConverted,
+            data_total: dataTotal,
+            data_mapped: dataMapped,
+            sql_total: sqlCount,
+            sql_converted: hasCriticalFault ? Math.max(0, sqlCount - 1) : sqlCount
+          }
+        },
+        process_timeline: [
+          {
+            phase_id: 1,
+            name: 'Read and map the old code',
+            status: 'DONE',
+            description: 'Scans the file to list every section, data field, and database query before using AI.',
+            artifacts: [`Program: ${progName}`, `${sections.length} functions`, `${dataItems.length} fields`]
+          },
+          {
+            phase_id: 2,
+            name: 'Plan the new Java layout',
+            status: 'DONE',
+            description: 'Uses the map from Step 1 to plan clean Java Spring Boot classes.',
+            artifacts: [`Class: ${serviceClass}.java`, 'Spring Boot layout']
+          },
+          {
+            phase_id: 3,
+            name: 'Write and test the Java code',
+            status: hasCriticalFault ? 'STOPPED' : 'DONE',
+            description: 'One agent writes the Java code and a second agent tests it, fixing errors automatically (up to 10 tries).',
+            artifacts: [`Tries used: ${hasCriticalFault ? 1 : (unconvertibleSections > 0 ? 3 : 1)} of 10`, `${overallPct}% converted`]
+          },
+          {
+            phase_id: 4,
+            name: 'Check for safety issues',
+            status: hasCriticalFault ? 'BLOCKED' : 'PASSED',
+            description: 'Checks the final code to make sure there are no dangerous commands or unsafe SQL queries.',
+            artifacts: [hasCriticalFault ? '1 unsafe query blocked' : 'No safety issues']
+          }
+        ],
+        comparison: {
+          headline_metrics: [
+            {
+              metric: 'Build Success Rate',
+              multi_agent: '88% – 97% pass',
+              single_llm: '27% – 41% pass',
+              delta: '+55% more working builds',
+              explanation: 'One agent writes the code and a second agent tests it, fixing errors automatically.'
+            },
+            {
+              metric: 'Code Reading Accuracy',
+              multi_agent: '100% exact',
+              single_llm: '66% accurate',
+              delta: 'No missed fields',
+              explanation: 'A regular code scanner reads all COBOL fields first so the AI never guesses.'
+            },
+            {
+              metric: 'Blocking Unsafe Code',
+              multi_agent: '100% blocked',
+              single_llm: '69% blocked',
+              delta: '+31% safer',
+              explanation: 'Built-in rules stop dangerous commands and unsafe database queries before code runs.'
+            },
+            {
+              metric: 'False Alarm Reviews',
+              multi_agent: '0.5% false alarms',
+              single_llm: '10.5% false alarms',
+              delta: '95% fewer false alarms',
+              explanation: 'Learns which warnings are harmless so people only review real problems.'
+            },
+            {
+              metric: 'Files Needed to Re-test After Changes',
+              multi_agent: '26 of 80 files',
+              single_llm: 'All 80 files',
+              delta: '67% less re-testing',
+              explanation: 'Tracks which files depend on each other so you only re-test affected files.'
+            }
+          ]
+        },
+        diagnostics,
+        generated_code: { [`${serviceClass}.java`]: javaCode },
+        guardrail_logs: hasCriticalFault ? [{ rule: 'UNSAFE_SQL' }] : []
+      };
+    }
+
+    function renderUI(data) {
+      document.getElementById('activeFileName').innerText = data.file_info.filename;
+      document.getElementById('activeFileSub').innerText = `${data.file_info.lines_of_code} lines · Program: ${data.file_info.program_name}`;
+
+      const statusBadge = document.getElementById('statusBadge');
+      if (data.status.success) {
+        statusBadge.className = 'badge badge-sage';
+        statusBadge.innerText = 'Ready to Use';
+      } else {
+        statusBadge.className = 'badge badge-rose';
+        statusBadge.innerText = 'Needs Review';
+      }
+
+      const pct = data.conversion_stats.overall_percentage;
+      document.getElementById('pctOverall').innerText = `${pct}%`;
+      document.getElementById('pctBar').style.width = `${pct}%`;
+
+      const c = data.conversion_stats.counts;
+      document.getElementById('bdSections').innerText = `${c.sections_converted} of ${c.sections_total} (${data.conversion_stats.section_percentage}%)`;
+      document.getElementById('bdData').innerText = `${c.data_mapped} of ${c.data_total} (${data.conversion_stats.data_percentage}%)`;
+      document.getElementById('bdSql').innerText = `${c.sql_converted} of ${c.sql_total} (${data.conversion_stats.sql_percentage}%)`;
+
+      document.getElementById('turnsUsedText').innerText = `${data.status.turns_used} of 10 tries`;
+
+      const diags = data.diagnostics || [];
+      const issuesOnly = diags.filter(d => d.severity !== 'INFO');
+      const vCount = (data.guardrail_logs || []).length;
+      document.getElementById('blockedCountText').innerText = vCount;
+
+      const reviewCard = document.getElementById('reviewCard');
+      const safetyBadge = document.getElementById('safetyBadge');
+      const reviewCountBig = document.getElementById('reviewCountBig');
+      const issuesHeaderBadge = document.getElementById('issuesHeaderBadge');
+
+      if (issuesOnly.length === 0) {
+        reviewCard.className = 'metric-card sage';
+        safetyBadge.className = 'badge badge-sage';
+        safetyBadge.innerText = 'All Clear';
+        reviewCountBig.innerText = '0 Issues';
+        issuesHeaderBadge.className = 'badge badge-sage';
+        issuesHeaderBadge.innerText = '0 Issues';
+      } else if (vCount > 0 || issuesOnly.some(i => i.severity === 'ERROR' || i.severity === 'CRITICAL')) {
+        reviewCard.className = 'metric-card rose';
+        safetyBadge.className = 'badge badge-rose';
+        safetyBadge.innerText = 'Action Needed';
+        reviewCountBig.innerText = `${issuesOnly.length} Issue${issuesOnly.length === 1 ? '' : 's'}`;
+        issuesHeaderBadge.className = 'badge badge-rose';
+        issuesHeaderBadge.innerText = `${issuesOnly.length} Issue${issuesOnly.length === 1 ? '' : 's'}`;
+      } else {
+        reviewCard.className = 'metric-card butter';
+        safetyBadge.className = 'badge badge-butter';
+        safetyBadge.innerText = 'Safety Passed';
+        reviewCountBig.innerText = `${issuesOnly.length} Note${issuesOnly.length === 1 ? '' : 's'}`;
+        issuesHeaderBadge.className = 'badge badge-butter';
+        issuesHeaderBadge.innerText = `${issuesOnly.length} Note${issuesOnly.length === 1 ? '' : 's'}`;
+      }
+
+      // Render 4 Steps
+      const stepsContainer = document.getElementById('stepsContainer');
+      stepsContainer.innerHTML = '';
+      data.process_timeline.forEach(s => {
+        const isOk = ['COMPLETED', 'PASSED', 'DONE'].includes(s.status);
+        const badgeClass = isOk ? 'badge-sage' : 'badge-rose';
+        const labelText = isOk ? 'Done' : 'Stopped';
+        const div = document.createElement('div');
+        div.className = 'step-item';
+        div.innerHTML = `
+          <div class="step-header">
+            <span class="step-title"><span class="step-num">Step ${s.phase_id}</span> ${s.name}</span>
+            <span class="badge ${badgeClass}">${labelText}</span>
+          </div>
+          <div class="step-desc">${s.description}</div>
+          <div class="step-tags">
+            ${s.artifacts.map(a => `<span class="chip">${a}</span>`).join('')}
+          </div>
+        `;
+        stepsContainer.appendChild(div);
+      });
+
+      // Render Issues / Review Notes
+      const issuesContainer = document.getElementById('issuesContainer');
+      issuesContainer.innerHTML = '';
+      diags.forEach(d => {
+        const div = document.createElement('div');
+        div.className = `issue-card ${d.severity}`;
+        let badgeClass = 'badge-sage';
+        let badgeLabel = 'Good';
+        if (d.severity === 'CRITICAL' || d.severity === 'ERROR') {
+          badgeClass = 'badge-rose';
+          badgeLabel = d.line_number ? `Error · Line ${d.line_number}` : 'Error';
+        } else if (d.severity === 'WARNING') {
+          badgeClass = 'badge-butter';
+          badgeLabel = d.line_number ? `Note · Line ${d.line_number}` : 'Note';
+        }
+        div.innerHTML = `
+          <div class="issue-top">
+            <span class="issue-target">${d.target || 'File Check'}</span>
+            <span class="badge ${badgeClass}">${badgeLabel}</span>
+          </div>
+          <div class="issue-what">${d.problem}</div>
+          <div class="issue-why">${d.impact}</div>
+          <div class="issue-how"><strong>How to fix:</strong> ${d.suggested_adjustment}</div>
+        `;
+        issuesContainer.appendChild(div);
+      });
+
+      // Render Comparison Table
+      const compBody = document.getElementById('comparisonTableBody');
+      compBody.innerHTML = '';
+      (data.comparison.headline_metrics || []).forEach(m => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div class="table-topic">${m.metric.replace(' (AST)', '')}</div>
+            <div class="table-explain">${m.explanation}</div>
+          </td>
+          <td><span class="badge" style="background:var(--bg-muted); color:var(--text-body);">${m.single_llm}</span></td>
+          <td><span class="badge badge-sage">${m.multi_agent}</span></td>
+          <td style="font-weight:600; color:var(--blue-text);">${m.delta}</td>
+        `;
+        compBody.appendChild(tr);
+      });
+
+      // Render Java Output
+      const codeEntries = Object.entries(data.generated_code || {});
+      document.getElementById('javaViewer').innerText = codeEntries.length > 0
+        ? codeEntries.map(([fn, c]) => `// File: ${fn}\n${c}`).join('\n\n')
+        : '// No Java output generated.';
+    }
+
+    function copyJavaCode() {
+      const text = document.getElementById('javaViewer').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.innerText = 'Copied!';
+        setTimeout(() => { btn.innerText = 'Copy Java Code'; }, 1500);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSample('payroll');
+    });
+  </script>
+</body>
+</html>

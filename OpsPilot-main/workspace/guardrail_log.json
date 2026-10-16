@@ -1,0 +1,9 @@
+[
+  {
+    "timestamp": "2026-10-16T13:43:34.363466",
+    "matched_rule": "RULE_SYSTEM_EXIT",
+    "pattern": "System.exit",
+    "offending_message": "public class Exploit { void run() { System.exit(1); } }",
+    "pipeline_stage": "Phase 4: Governance Guardrail Interceptor"
+  }
+]
