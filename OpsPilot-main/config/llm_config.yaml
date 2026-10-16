@@ -4,10 +4,7 @@ llm:
   model: "gpt-4o"
   temperature: 0.2
   max_tokens: 4096
-  request_timeout: 120
-  retry_policy:
-    max_retries: 3
-    backoff_factor: 2
+  timeout: 120
 
 pipeline:
   phase3_iteration_budget: 10
