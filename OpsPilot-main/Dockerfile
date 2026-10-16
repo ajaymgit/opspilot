@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy project specification and install dependencies
 COPY pyproject.toml README.md ./
+COPY src ./src
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -e ".[dev,extension-plots]" openai
 
