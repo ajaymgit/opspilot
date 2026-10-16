@@ -278,6 +278,22 @@
     .badge-rose { background: var(--rose-bg); color: var(--rose-text); border: 1px solid var(--rose-border); }
     .badge-lavender { background: var(--lavender-bg); color: var(--lavender-text); border: 1px solid var(--lavender-border); }
 
+    @keyframes pulse-anim {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.55; transform: scale(0.98); }
+    }
+    .badge-running {
+      background: var(--blue-bg);
+      color: var(--blue-text);
+      border: 1px solid var(--blue-border);
+      animation: pulse-anim 1.2s infinite ease-in-out;
+      font-weight: 600;
+    }
+    .step-item.active-step {
+      border-color: var(--blue-text);
+      background: #F4F8FC;
+    }
+
     /* 3 Overview Cards */
     .overview-grid {
       display: grid;
@@ -988,7 +1004,86 @@ END order_processor;`
       runConversion(filename, content);
     }
 
+    let progressTimer = null;
+
+    function startLiveProgress(filename) {
+      const convertBtn = document.querySelector("button[onclick='rerunEditedSource()']");
+      if (convertBtn) {
+        convertBtn.disabled = true;
+        convertBtn.innerText = '⏳ Converting (0s)...';
+      }
+      const statusBadge = document.getElementById('statusBadge');
+      if (statusBadge) {
+        statusBadge.className = 'badge badge-running';
+        statusBadge.innerText = 'Converting...';
+      }
+
+      let elapsed = 0;
+      const steps = [
+        { id: 1, name: 'Read and map the old code', desc: 'Deterministic parser scanning AST, variables, and queries...', targetSec: 0 },
+        { id: 2, name: 'Plan the new Java layout', desc: 'Planner agent designing Spring Boot architecture with AI...', targetSec: 2 },
+        { id: 3, name: 'Write and test the Java code', desc: 'Coder & Tester loop generating and verifying Spring Boot classes...', targetSec: 5 },
+        { id: 4, name: 'Check for safety issues', desc: 'Running deterministic security guardrails and interceptors...', targetSec: 12 }
+      ];
+
+      function updateLiveSteps() {
+        const stepsContainer = document.getElementById('stepsContainer');
+        if (!stepsContainer) return;
+        stepsContainer.innerHTML = '';
+
+        steps.forEach(s => {
+          let badgeClass = 'badge-butter';
+          let labelText = 'Queued';
+          let itemClass = 'step-item';
+
+          if ((s.id === 1 && elapsed >= 2) || (s.id === 2 && elapsed >= 5) || (s.id === 3 && elapsed >= 12)) {
+            badgeClass = 'badge-sage';
+            labelText = 'Done';
+          } else if (elapsed >= s.targetSec) {
+            badgeClass = 'badge-running';
+            labelText = 'Running...';
+            itemClass += ' active-step';
+          }
+
+          const div = document.createElement('div');
+          div.className = itemClass;
+          div.innerHTML = `
+            <div class="step-header">
+              <span class="step-title"><span class="step-num">Step ${s.id}</span> ${s.name}</span>
+              <span class="badge ${badgeClass}">${labelText}</span>
+            </div>
+            <div class="step-desc">${s.desc}</div>
+          `;
+          stepsContainer.appendChild(div);
+        });
+      }
+
+      updateLiveSteps();
+
+      if (progressTimer) clearInterval(progressTimer);
+      progressTimer = setInterval(() => {
+        elapsed++;
+        if (convertBtn) {
+          convertBtn.innerText = `⏳ Converting (${elapsed}s)...`;
+        }
+        updateLiveSteps();
+      }, 1000);
+    }
+
+    function stopLiveProgress() {
+      if (progressTimer) {
+        clearInterval(progressTimer);
+        progressTimer = null;
+      }
+      const convertBtn = document.querySelector("button[onclick='rerunEditedSource()']");
+      if (convertBtn) {
+        convertBtn.disabled = false;
+        convertBtn.innerText = 'Convert Again';
+      }
+    }
+
     async function runConversion(filename, content) {
+      startLiveProgress(filename);
       try {
         const resp = await fetch('/api/convert', {
           method: 'POST',
@@ -997,8 +1092,10 @@ END order_processor;`
         });
         if (!resp.ok) throw new Error('Offline mode');
         const data = await resp.json();
+        stopLiveProgress();
         renderUI(data);
       } catch (e) {
+        stopLiveProgress();
         const data = analyzeLocally(filename, content);
         renderUI(data);
       }
